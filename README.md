@@ -70,6 +70,16 @@ dsh-breach 干两件事：
 
 npm 上没有 `dsh-breach` 这个包——它没通过 npm 的发布期自动扫描，所以**不要**用 `npm i dsh-breach`、`pnpm add dsh-breach` 或界面里粘贴包名，那些都装不到东西。
 
+### 界面里装（最常用）
+
+DSH → 插件 → **添加插件**，输入框里填**完整仓库地址**：
+
+```
+https://github.com/zhuchongba-01/dsh-breach
+```
+
+> 别只填 `dsh-breach`。只填包名时 DSH 会当成 npm 包名去查源，而 npm 上同名包只是个空壳，会报「这个包没有声明组合包，无法作为插件安装」。
+
 ### CLI 安装（宿主带 `dsh` 命令时）
 
 按你的表面选一条：

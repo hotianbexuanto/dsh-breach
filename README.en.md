@@ -70,6 +70,16 @@ It does not touch your conversation content and does not take over the host: it 
 
 `dsh-breach` is not on npm — it did not pass npm's publish-time automated scan, so **do not** use `npm i dsh-breach`, `pnpm add dsh-breach`, or paste the package name into the UI; none of those install anything.
 
+### From the UI (most common)
+
+DSH → Plugins → **Add plugin**, and put the **full repository URL** in the box:
+
+```
+https://github.com/zhuchongba-01/dsh-breach
+```
+
+> Do not enter just `dsh-breach`. A bare package name makes DSH look it up on the npm registry, where a same-named empty placeholder exists — you get "这个包没有声明组合包, 无法作为插件安装" (declares no dsh.bundle).
+
 ### CLI (when the host ships the `dsh` command)
 
 Pick the line for your surface:
