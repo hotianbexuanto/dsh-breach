@@ -1,8 +1,7 @@
 > [!IMPORTANT]
 > **只从 GitHub 源码安装 —— npm 上没有这个包。**
 >
-> - **界面装**：DSH → 插件 → **添加插件** → 输入框填 **`https://github.com/zhuchongba-01/dsh-breach`**
-> - **命令行装**：**`dsh plugin --profile web add github:zhuchongba-01/dsh-breach`**
+> 装法：DSH → 插件 → **添加插件** → 输入框填 **`https://github.com/zhuchongba-01/dsh-breach`**
 >
 > **为什么只能走 GitHub**：`dsh-breach` 按正常流程发布时被 npm 的供应链自动扫描拦下（`1.2.7` 没有进入 registry，npm 上只剩一个 `0.0.0-stage` 空壳占位包）。所以界面里只填 `dsh-breach`，DSH 会把它当成 npm 包名去查源，命中的就是这个空壳，报「这个包没有声明组合包，无法作为插件安装」。
 
@@ -87,20 +86,6 @@ https://github.com/zhuchongba-01/dsh-breach
 ```
 
 > 别只填 `dsh-breach`。只填包名时 DSH 会当成 npm 包名去查源，而 npm 上同名包只是个空壳，会报「这个包没有声明组合包，无法作为插件安装」。
-
-### CLI 安装（宿主带 `dsh` 命令时）
-
-按你的表面选一条：
-
-```bash
-# Web 表面
-dsh plugin --profile web add github:zhuchongba-01/dsh-breach
-
-# 官方桌面端（EXE）
-dsh plugin --profile desktop add github:zhuchongba-01/dsh-breach
-```
-
-部分安装（桌面版）不带 `dsh` 命令——那就用下面这种方式。
 
 ### 写进 profile 的 `package.json`
 
@@ -220,7 +205,7 @@ Node.js: >= 18
 DSH: >= 0.2.1-rc.5
 Surfaces: web, desktop
 License: MIT
-Install: dsh plugin --profile web add github:zhuchongba-01/dsh-breach
+Install: https://github.com/zhuchongba-01/dsh-breach
 ```
 
 | 项 | 值 | 状态 |

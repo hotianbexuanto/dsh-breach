@@ -1,8 +1,7 @@
 > [!IMPORTANT]
 > **Install from GitHub source only — this package is not on npm.**
 >
-> - **From the UI**: DSH → Plugins → **Add plugin** → paste **`https://github.com/zhuchongba-01/dsh-breach`**
-> - **From the CLI**: **`dsh plugin --profile web add github:zhuchongba-01/dsh-breach`**
+> How to install: DSH → Plugins → **Add plugin** → paste **`https://github.com/zhuchongba-01/dsh-breach`**
 >
 > **Why GitHub only**: `dsh-breach` was published normally, but npm's supply-chain automated scan rejected it (`1.2.7` never reached the registry; npm holds only an empty `0.0.0-stage` placeholder). Typing just `dsh-breach` in the UI makes DSH look it up as an npm package, hit that placeholder, and refuse with "this package declares no dsh.bundle".
 
@@ -87,20 +86,6 @@ https://github.com/zhuchongba-01/dsh-breach
 ```
 
 > Do not enter just `dsh-breach`. A bare package name makes DSH look it up on the npm registry, where a same-named empty placeholder exists — you get "这个包没有声明组合包, 无法作为插件安装" (declares no dsh.bundle).
-
-### CLI (when the host ships the `dsh` command)
-
-Pick the line for your surface:
-
-```bash
-# web surface
-dsh plugin --profile web add github:zhuchongba-01/dsh-breach
-
-# official desktop build (EXE)
-dsh plugin --profile desktop add github:zhuchongba-01/dsh-breach
-```
-
-Some installs (the desktop build, for one) ship without the `dsh` command — use the next method then.
 
 ### Add it to the profile's `package.json`
 
@@ -220,7 +205,7 @@ Node.js: >= 18
 DSH: >= 0.2.1-rc.5
 Surfaces: web, desktop
 License: MIT
-Install: dsh plugin --profile web add github:zhuchongba-01/dsh-breach
+Install: https://github.com/zhuchongba-01/dsh-breach
 ```
 
 | Item | Value | Status |
