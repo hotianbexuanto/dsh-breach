@@ -1,7 +1,13 @@
-> [!WARNING]
-> **Hold off upgrading DSH to `0.2.2-rc.1` (the candidate released 2026-11-04).**
+<div align="center">
+
+## ⚠️ **DO NOT upgrade DSH to `0.2.2-rc.1` yet**
+
+</div>
+
+> [!CAUTION]
+> **That candidate (released 2026-11-04) breaks most of this plugin's cleanup.**
 >
-> That release rewrote a lot of host internals: `systemPrompt.assemble` now takes an object, approval and sandbox logic moved to different files, agent-loop sections are wrapped in `try`, the official bundle list moved to `@deepseek-ai/dsh-official-bundles`, and the minimum Node version rose to 24.9. This plugin's patches are still being ported and **have not been verified on a real machine**.
+> It rewrote a lot of host internals: `systemPrompt.assemble` now takes an object, approval and sandbox logic moved to different files, agent-loop sections are wrapped in `try`, the official bundle list moved to `@deepseek-ai/dsh-official-bundles`, and the minimum Node version rose to 24.9. This plugin's patches are still being ported and **have not been verified on a real machine**.
 >
 > Upgrading now looks like "the panel opens fine, no patch errors, but most of the cleaning silently does nothing" — it will not crash, it just will not work.
 >
