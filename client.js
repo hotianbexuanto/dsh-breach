@@ -864,7 +864,7 @@ body:not([data-ds-dark-theme]) .dshp-auth-ops button.primary{background:var(--ds
 .dshp-dock-resize-b:hover{background:color-mix(in srgb,var(--dsw-alias-brand-primary,#748B6F) 35%,transparent)}
 .dshp-auth-mask{position:fixed;inset:0;z-index:10100;background:rgba(0,0,0,.62);display:flex;align-items:center;justify-content:center;padding:20px;pointer-events:auto}
 .dshp-auth-modal{width:min(680px,100%);max-height:min(88vh,820px);display:flex;flex-direction:column;gap:10px;padding:16px;border:1px solid var(--dsw-alias-border-l1,#333);border-radius:12px;background:var(--dsw-alias-bg-layer-1,#1a1a1a);color:var(--dsw-alias-label-primary,#eee)}
-.dshp-update-notes{max-height:min(46vh,420px);overflow:auto;font-size:13px;line-height:1.65;padding:10px 12px;border-radius:8px;background:color-mix(in srgb,var(--dsw-alias-label-primary,#888) 7%,transparent);border:1px solid color-mix(in srgb,var(--dsw-alias-border-l1,#444) 55%,transparent);word-break:break-word}
+.dshp-update-notes{max-height:min(38vh,300px);overflow:auto;font-size:12.5px;line-height:1.6;padding:8px 10px;border-radius:8px;background:color-mix(in srgb,var(--dsw-alias-label-primary,#888) 7%,transparent);border:1px solid color-mix(in srgb,var(--dsw-alias-border-l1,#444) 55%,transparent);word-break:break-word}
 .dshp-auth-modal h2{margin:0;font-size:16px;font-weight:600}
 .dshp-auth-warn{padding:8px 10px;border-radius:8px;background:#3a2e18;color:#f0d48a;font-size:13px}
 .dshp-auth-legal{overflow:auto;height:300px;margin:0;padding:10px 12px;border:1px solid var(--dsw-alias-border-l1,#333);border-radius:8px;background:#121212;font-size:13px;line-height:1.55}
@@ -2712,7 +2712,7 @@ body[data-ds-dark-theme] .dshp-rewind-item span{color:var(--dsw-alias-label-tert
 			const from = safeText(info.localVersion, "");
 			const to = safeText(info.remoteVersion, "");
 			const node = h("div", { className: "dshp-auth-mask", role: "dialog", "aria-modal": "true" },
-				h("div", { className: "dshp-auth-modal", style: { width: "min(620px,100%)" } },
+				h("div", { className: "dshp-auth-modal", style: { width: "min(520px,92vw)", maxHeight: "min(76vh,620px)", gap: 8, padding: 14 } },
 					h("h2", { style: { margin: "0 0 6px" } }, t("updDialog.title")),
 					h("div", { className: "muted", style: { fontSize: 12, marginBottom: 12 } },
 						from && to && from !== to
