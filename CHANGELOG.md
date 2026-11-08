@@ -16,6 +16,13 @@
 
 顺序反了不会损坏任何东西，只是补丁暂时不生效。
 
+## 1.3.2 — 修复点「应用/重启」后崩溃
+
+### 修复
+
+- **点「应用」或「重启」后 DSH 直接崩溃**：`restartDsh` 把 `{kind, text}` 对象传给了期望字符串的 `setNote`，`note` 变成对象后被 `h("div", ..., note)` 直接渲染，抛 React error #31，导致 `shell.overlay` 的 dock entry 崩溃、宿主判 fatal。
+- 已在 `restartDsh` 入口统一适配：无论上游传字符串 setter 还是对象 setter，都只交出 `text`。
+
 ## 1.3.1 — 适配 DSH 0.2.2-rc.1
 
 ### 适配
