@@ -29,6 +29,12 @@
     "bin",
     "scripts",
     "client.js",
+    "locale",
+    "detail.zh.md",
+    "detail.en.md",
+    "docs",
+    "README.md",
+    "README.en.md",
     "cordis.patch.yml",
     "CHANGELOG.md"
   ],

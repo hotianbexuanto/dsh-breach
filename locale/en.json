@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "Breach",
+    "description": "Replace the identity, disclaimer, and approval sections of the system prompt: prompts per model, one-click rollback.",
+    "detail": "detail.en.md"
+  }
+}
