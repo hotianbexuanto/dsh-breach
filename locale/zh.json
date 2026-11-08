@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "破甲",
-    "description": "换掉系统提示里的身份、免责与审批段：按模型挂提示词，改坏一键回滚。",
+    "description": "换掉系统提示里的身份、免责与审批段，改坏一键回滚。",
     "detail": "detail.zh.md"
   }
 }
