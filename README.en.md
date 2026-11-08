@@ -1,17 +1,3 @@
-<div align="center">
-
-## ⚠️ **Do not upgrade DSH — stay on `0.2.1-rc.5`**
-
-</div>
-
-> [!CAUTION]
-> **Do not upgrade to `0.2.2-rc.1` for now.**
->
-> This plugin is not ported yet, and in testing the upgrade itself failed with an error.
->
-> - Stay on **`0.2.1-rc.5`** for now.
-> - Upgrading will be allowed once the port is finished and verified; this warning will be removed and a Release note published then.
-
 > [!IMPORTANT]
 > **Install from GitHub source only — this package is not on npm.**
 >
@@ -160,7 +146,7 @@ text currently in the composer  >  $DSH_HOME/prompt-inject.md  >  the plugin's e
 
 It replaces specific strings inside `@deepseek-ai/*` host sources.
 
-- **86 definitions** (ids 1..92, with gaps), **settled** at runtime per host version — on `0.2.1-rc.5` that is **72 items**: prompt 19 · code 46 · tools 4 · compatibility 3.
+- **86 definitions** (ids 1..92, with gaps), **settled** at runtime per host version — **70 items** on `0.2.2-rc.1`.
 - Every patch has a unique id; before touching anything it writes a `.dshhappy.bak` backup and records the change in `$DSH_HOME/dsh-breach/applied.json`.
 - After a host upgrade you can replay (reapply) or revert the whole batch; unknown host versions are skipped rather than force-patched.
 
@@ -224,8 +210,8 @@ Install: https://github.com/zhuchongba-01/dsh-breach
 
 | Item | Value | Status |
 |---|---|---|
-| Host `0.2.1-rc.5` · web | 72 items settled, 71 applied / 1 skipped | Verified |
-| Host `0.2.1-rc.5` · desktop | Same | Verified |
+| Host `0.2.2-rc.1` · desktop | 70 items settled, 70 applied / 0 skipped | Verified |
+| Host `0.2.1-rc.5` · desktop | 72 items settled, 71 applied / 1 skipped | Verified |
 | Other host versions | — | Not verified (unknown patterns are skipped) |
 | Node | ≥ 18 | — |
 | `@deepseek-ai/cordis` | `^4.0.1` (peer) | — |
