@@ -125,9 +125,15 @@ window.__ModuleLoader__.load({ id: "dsh-breach", factory: (require) => {
 			"dock.toggle": "dsh-breach",
 			"dock.newSession": "dsh-breach",
 			"updPill.label": "更新",
-			"updPill.title": "有新版本可用，点一下自动更新",
+			"updPill.title": "有新版本可用，点一下看更新内容",
 			"updPill.busy": "更新中…",
 			"updPill.fail": "更新失败",
+			"updDialog.title": "发现新版本",
+			"updDialog.version": "版本",
+			"updDialog.now": "立即更新",
+			"updDialog.later": "稍后",
+			"updDialog.updating": "更新中…",
+			"updDialog.noNotes": "这个版本没有附带更新说明。",
 			"dock.inSession": "dsh-breach",
 			"dock.full": "全面浏览",
 			"dock.close": "收起",
@@ -393,9 +399,15 @@ window.__ModuleLoader__.load({ id: "dsh-breach", factory: (require) => {
 			"dock.toggle": "dsh-breach",
 			"dock.newSession": "dsh-breach",
 			"updPill.label": "Update",
-			"updPill.title": "New version available — click to update",
+			"updPill.title": "New version available — click to see what changed",
 			"updPill.busy": "Updating…",
 			"updPill.fail": "Update failed",
+			"updDialog.title": "Update available",
+			"updDialog.version": "Version",
+			"updDialog.now": "Update now",
+			"updDialog.later": "Later",
+			"updDialog.updating": "Updating…",
+			"updDialog.noNotes": "This release ships without notes.",
 			"dock.inSession": "dsh-breach",
 			"dock.full": "Full view",
 			"dock.close": "Collapse",
@@ -852,6 +864,7 @@ body:not([data-ds-dark-theme]) .dshp-auth-ops button.primary{background:var(--ds
 .dshp-dock-resize-b:hover{background:color-mix(in srgb,var(--dsw-alias-brand-primary,#748B6F) 35%,transparent)}
 .dshp-auth-mask{position:fixed;inset:0;z-index:10100;background:rgba(0,0,0,.62);display:flex;align-items:center;justify-content:center;padding:20px;pointer-events:auto}
 .dshp-auth-modal{width:min(680px,100%);max-height:min(88vh,820px);display:flex;flex-direction:column;gap:10px;padding:16px;border:1px solid var(--dsw-alias-border-l1,#333);border-radius:12px;background:var(--dsw-alias-bg-layer-1,#1a1a1a);color:var(--dsw-alias-label-primary,#eee)}
+.dshp-update-notes{max-height:min(46vh,420px);overflow:auto;font-size:13px;line-height:1.65;padding:10px 12px;border-radius:8px;background:color-mix(in srgb,var(--dsw-alias-label-primary,#888) 7%,transparent);border:1px solid color-mix(in srgb,var(--dsw-alias-border-l1,#444) 55%,transparent);word-break:break-word}
 .dshp-auth-modal h2{margin:0;font-size:16px;font-weight:600}
 .dshp-auth-warn{padding:8px 10px;border-radius:8px;background:#3a2e18;color:#f0d48a;font-size:13px}
 .dshp-auth-legal{overflow:auto;height:300px;margin:0;padding:10px 12px;border:1px solid var(--dsw-alias-border-l1,#333);border-radius:8px;background:#121212;font-size:13px;line-height:1.55}
@@ -2675,11 +2688,62 @@ body[data-ds-dark-theme] .dshp-rewind-item span{color:var(--dsw-alias-label-tert
 		}
 
 		/** 首页胶囊旁的「更新」小胶囊：只有真有新版本才出现，点一下走现成的 /update 安装 + 重启链路。 */
+		/** 把 CHANGELOG.md 的纯文本渲染成轻量块：标题加粗、`-` 变圆点、空行留白。 */
+		function renderUpdateNotes(text) {
+			const lines = String(text || "").split(/\r?\n/);
+			return lines.map((line, index) => {
+				const s = line.trim();
+				if (!s) return h("div", { key: index, style: { height: 6 } });
+				if (/^#{1,4}\s/.test(s)) {
+					return h("div", { key: index, style: { fontWeight: 600, marginTop: 8, marginBottom: 2 } }, s.replace(/^#{1,4}\s+/, ""));
+				}
+				if (/^[-*]\s/.test(s)) {
+					return h("div", { key: index, style: { paddingLeft: 14, textIndent: -10 } }, "• " + s.replace(/^[-*]\s+/, ""));
+				}
+				return h("div", { key: index }, s);
+			});
+		}
+
+		/** 更新确认弹窗：展示版本跨度与更新内容，用户自己决定更不更。 */
+		function UpdateDialog(props) {
+			const t = props.t;
+			const info = props.info || {};
+			const notes = typeof info.notes === "string" ? info.notes.trim() : "";
+			const from = safeText(info.localVersion, "");
+			const to = safeText(info.remoteVersion, "");
+			const node = h("div", { className: "dshp-auth-mask", role: "dialog", "aria-modal": "true" },
+				h("div", { className: "dshp-auth-modal", style: { width: "min(620px,100%)" } },
+					h("h2", { style: { margin: "0 0 6px" } }, t("updDialog.title")),
+					h("div", { className: "muted", style: { fontSize: 12, marginBottom: 12 } },
+						from && to && from !== to
+							? t("updDialog.version") + " " + from + " → " + to
+							: t("updDialog.version") + " " + (to || from || "")),
+					notes
+						? h("div", { className: "dshp-update-notes" }, renderUpdateNotes(notes))
+						: h("div", { className: "muted", style: { fontSize: 13 } }, t("updDialog.noNotes")),
+					props.err ? h("div", { className: "dshp-notice is-bad", style: { marginTop: 10 } }, props.err) : null,
+					h("div", { className: "dshp-auth-ops", style: { display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 16 } },
+						h("button", { type: "button", disabled: props.busy, onClick: props.onClose }, t("updDialog.later")),
+						h("button", { type: "button", className: "primary", disabled: props.busy, onClick: props.onConfirm },
+							props.busy ? t("updDialog.updating") : t("updDialog.now")),
+					),
+				),
+			);
+			try {
+				const rd = require("react-dom");
+				if (rd && typeof rd.createPortal === "function" && typeof document !== "undefined" && document.body) {
+					return rd.createPortal(node, document.body);
+				}
+			} catch { /* ignore */ }
+			return node;
+		}
+
 		function HeroUpdatePill() {
 			const t = useT();
 			const [info, setInfo] = useState(null);
 			const [busy, setBusy] = useState(false);
 			const [err, setErr] = useState("");
+			const [open, setOpen] = useState(false);
 			useEffect(() => {
 				let dead = false;
 				const tick = () => {
@@ -2704,19 +2768,31 @@ body[data-ds-dark-theme] .dshp-rewind-item span{color:var(--dsw-alias-label-tert
 						if (!d || !d.ok) throw new Error((d && d.error) || "failed");
 						setBusy(false);
 						setInfo(null);
+						setOpen(false);
 					})
 					.catch((e) => { setBusy(false); setErr(String((e && e.message) || e)); });
 			};
-			if (!busy && !(info && info.hasUpdate)) return null;
+			// 有更新才出胶囊；弹窗打开期间即使 info 被清空也要继续渲染它。
+			if (!open && !busy && !(info && info.hasUpdate)) return null;
 			// 只报目标版本，不做「当前 → 目标」比较，避免版本顺序引起误读。
 			const detail = info && info.remoteVersion ? " " + info.remoteVersion : "";
-			return h("button", {
-				type: "button",
-				className: "dshp-update-pill" + (err ? " is-bad" : ""),
-				disabled: busy,
-				title: err ? t("updPill.fail") + ": " + err : t("updPill.title") + detail,
-				onClick: run,
-			}, busy ? t("updPill.busy") : t("updPill.label"));
+			return h(react.Fragment, null,
+				!open ? h("button", {
+					type: "button",
+					className: "dshp-update-pill" + (err ? " is-bad" : ""),
+					disabled: busy,
+					title: err ? t("updPill.fail") + ": " + err : t("updPill.title") + detail,
+					onClick: () => { setErr(""); setOpen(true); },
+				}, busy ? t("updPill.busy") : t("updPill.label")) : null,
+				open ? h(UpdateDialog, {
+					info,
+					busy,
+					err,
+					t,
+					onClose: () => { if (!busy) { setErr(""); setOpen(false); } },
+					onConfirm: run,
+				}) : null,
+			);
 		}
 
 		/** 首屏胶囊的图标：与宿主那排控件同款线性图标（14px，描边走 currentColor）。 */
