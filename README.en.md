@@ -1,8 +1,15 @@
 > [!IMPORTANT]
 > **Install from GitHub source only — this package is not on npm.**
->
-> How to install: DSH → Plugins → **Add plugin** → paste **`https://github.com/zhuchongba-01/dsh-breach`**
->
+
+### Install
+
+**DSH → Plugins → Add plugin → paste:**
+
+```
+https://github.com/zhuchongba-01/dsh-breach
+```
+
+> [!NOTE]
 > **Why GitHub only**: `dsh-breach` was published normally, but npm's supply-chain automated scan rejected it (`1.2.7` never reached the registry; npm holds only an empty `0.0.0-stage` placeholder). Typing just `dsh-breach` in the UI makes DSH look it up as an npm package, hit that placeholder, and refuse with "this package declares no dsh.bundle".
 
 > [!WARNING]
