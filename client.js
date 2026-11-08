@@ -141,7 +141,7 @@ window.__ModuleLoader__.load({ id: "dsh-breach", factory: (require) => {
 			"welcome.title": "用户须知",
 			"welcome.lead": "首次安装本插件时请阅读以下说明。确认后本窗不再弹出。",
 			"welcome.warn": "本插件免费开源。任何背着作者私自售卖、付费倒卖或借本项目盈利的行为，作者将依法追究法律责任。",
-			"welcome.body": "dsh-breach 是 DeepSeek Harness 的本机网络安全红队评测与清洗插件：在受控本机环境中调整提示词与补丁。项目免费、非营利。",
+			"welcome.body": "dsh-breach 是 DeepSeek Harness 的本机增强插件：调整提示词、补丁与运行策略。项目免费、非营利。",
 			"welcome.repo": "https://github.com/zhuchongba-01/dsh-breach",
 			"welcome.ban1": "禁止将本项目用于未授权的网络攻击、入侵、窃取数据、破坏系统或任何违法犯罪。",
 			"welcome.ban2": "禁止商业售卖、付费倒卖、黑灰产牟利，以及隐瞒作者的营利性再分发。",
@@ -182,7 +182,7 @@ window.__ModuleLoader__.load({ id: "dsh-breach", factory: (require) => {
 			"warn.noRoot.desktop": "官方客户端的代码在 app.asar 里。点「应用」会解开并自动重启，不用另跑脚本。若一直显示还没定位，先完全退出客户端再开，再点「应用」。第三方 DSH Desktop 直接点「应用」。",
 			"unpack.restarting": "补丁已写入。点「重启」后客户端会自己重新打开。",
 			"restart.fullQuit": "正在重启，客户端会自己重新打开。",
-			"warn.noInject": "官方始终用默认提示词。红队开了规则集就只用规则集；没开时用去掉 CTF 的默认提示词，再接红队操作。两边都空会提示必须添加。",
+			"warn.noInject": "官方始终用默认提示词。启用规则集时只用规则集；未启用时用去掉 CTF 的默认提示词，再接规则操作。两边都空会提示必须添加。",
 			"need.prompt": "提示词和规则集都是空的，必须先添加提示词，或启用一条有内容的规则集。",
 			"btn.restoreInject": "恢复默认",
 			"saved.restoreInject": "已恢复默认提示词",
@@ -415,7 +415,7 @@ window.__ModuleLoader__.load({ id: "dsh-breach", factory: (require) => {
 			"welcome.title": "User notice",
 			"welcome.lead": "Please read this on first install. After you confirm, it will not appear again.",
 			"welcome.warn": "This plugin is free and open source. Anyone who sells, resells, or profits from it behind the author's back may face legal action.",
-			"welcome.body": "dsh-breach is a local DeepSeek Harness plugin for security evaluation and cleaning: adjust prompts and patches on a machine you control. Free and non-profit.",
+			"welcome.body": "dsh-breach is a local DeepSeek Harness enhancement plugin: adjust prompts, patches and runtime policy on a machine you control. Free and non-profit.",
 			"welcome.repo": "https://github.com/zhuchongba-01/dsh-breach",
 			"welcome.ban1": "Do not use this project for unauthorized attacks, intrusion, data theft, sabotage, or any illegal activity.",
 			"welcome.ban2": "Do not commercially sell, resell, or profit from gray-market use, or redistribute for profit without the author.",
@@ -456,7 +456,7 @@ window.__ModuleLoader__.load({ id: "dsh-breach", factory: (require) => {
 			"warn.noRoot.desktop": "Official Harness keeps its code in app.asar. Apply unpacks it and restarts the app. If this page stays “not found”, fully quit the client, reopen it, then Apply again. Third-party DSH Desktop: just Apply.",
 			"unpack.restarting": "Patches are written. Click Restart and the client opens again by itself.",
 			"restart.fullQuit": "Restarting. The client will open again by itself.",
-			"warn.noInject": "Official mode always uses the default prompt. Red team uses only the active rule set; otherwise it uses the default prompt without the CTF section, then the red team steps. If both are empty you will be asked to add a prompt.",
+			"warn.noInject": "Official mode always uses the default prompt. With a rule set active, only the rule set is used; otherwise the default prompt without the CTF section, followed by the rule steps. If both are empty you will be asked to add a prompt.",
 			"need.prompt": "Both the prompt and the rule set are empty. Add a prompt, or enable a rule that has content.",
 			"btn.restoreInject": "Reset default",
 			"saved.restoreInject": "Default prompt restored",
@@ -2605,7 +2605,7 @@ body[data-ds-dark-theme] .dshp-rewind-item span{color:var(--dsw-alias-label-tert
 				window.addEventListener("mousemove", move);
 				window.addEventListener("mouseup", up);
 			};
-			// 演练台（红队模式）已移除：内容区固定为清洗，不再渲染红队面板。
+			// 演练台已移除：内容区固定为清洗。
 			const body = h(SettingsRoot, { t });
 			const panel = h("div", {
 				className: "dshp-dock",
@@ -2824,7 +2824,7 @@ body[data-ds-dark-theme] .dshp-rewind-item span{color:var(--dsw-alias-label-tert
 			);
 		}
 
-		/** 首页：模式旁挂「dsh-breach」→ 打开插件。红队模式走模式下拉（registry 声明）。 */
+		/** 首页：模式旁挂「dsh-breach」→ 打开插件。 */
 		function HeroNewSessionMount() {
 			const t = useT();
 			const st = useDock();
@@ -2988,7 +2988,7 @@ body[data-ds-dark-theme] .dshp-rewind-item span{color:var(--dsw-alias-label-tert
 			// 直接进 React children 会抛 error #31 并拖垮整个 overlay entry。
 			const t = (key, params) => safeText(bound(key, params), key);
 			translate = t;
-			// 红队门禁的依赖已随演练台删除，不能再挂到共享 overlay，
+			// 门禁依赖已随演练台删除，不能再挂到共享 overlay，
 			// 否则其 effect 抛错会让宿主卸载同组的入口和设置面板。
 			ctx.slots.inject("shell.overlay", () => ctx.slots.register({
 				name: "shell.overlay",
