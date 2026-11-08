@@ -1288,7 +1288,17 @@ body:not([data-ds-dark-theme]) .dshp-auth-ops button.primary{background:var(--ds
 
 		let restartOnce = false;
 
-		function restartDsh(setNotice, setBusy, t, surface) {
+		function restartDsh(setNoticeRaw, setBusy, t, surface) {
+			// 调用方（OverviewSection）传进来的是「接收字符串」的 setNote，
+			// 但本函数内部按 {kind, text} 传对象。对象直接被渲染会抛
+			// React error #31（Objects are not valid as a React child），
+			// 进而让整个 shell.overlay 的 dock entry 崩掉、宿主判 fatal。
+			// 这里统一适配：无论上游给的是字符串 setter 还是对象 setter，
+			// 都只把 text 交出去。
+			const setNotice = (notice) => {
+				const text = notice && typeof notice === "object" ? notice.text : notice;
+				setNoticeRaw(safeText(text, ""));
+			};
 			if (restartOnce) return;
 			const surf = surface || clientGuessSurface() || "desktop";
 			const desktop = surf === "desktop" || clientGuessSurface() === "desktop";
