@@ -29,13 +29,32 @@ window.__ModuleLoader__.load({ id: "dsh-breach", factory: (require) => {
 		function hostSurfaceOf(s) {
 			return (s && s.surface) || clientGuessSurface() || "web";
 		}
+		/**
+		 * 把任意来源的文本收敛成字符串。
+		 * DSH 0.2.2 起，locale / command / tool 的返回值可能是 {kind, text} 这类对象，
+		 * 直接塞进 React children 会抛 React error #31（Objects are not valid as a React child），
+		 * 进而让整个 shell.overlay entry 崩掉、宿主判 fatal 直接退出。
+		 */
+		function safeText(value, fallback) {
+			const fb = fallback === undefined ? "" : fallback;
+			if (typeof value === "string") return value;
+			if (value === null || value === undefined) return fb;
+			if (typeof value === "number" || typeof value === "boolean") return String(value);
+			if (typeof value === "object") {
+				if (typeof value.text === "string") return value.text;
+				if (typeof value.message === "string") return value.message;
+				if (typeof value.label === "string") return value.label;
+				return fb;
+			}
+			return fb;
+		}
 		function hostText(t, key, surface) {
 			if (surface && surface !== "web") {
 				const specific = key + "." + surface;
 				const hit = t(specific);
-				if (hit && hit !== specific) return hit;
+				if (hit && hit !== specific) return safeText(hit, key);
 			}
-			return t(key);
+			return safeText(t(key), key);
 		}
 		function apiUrl(p) {
 			try { return new URL(p, window.location.origin).toString(); } catch { return p; }
@@ -1015,8 +1034,10 @@ body:not([data-ds-dark-theme]) .dshp-auth-ops button.primary{background:var(--ds
 		}
 
 		function noticeNode(notice) {
-			if (!notice || notice.kind === "idle" || !notice.text) return null;
-			return h("span", { className: "dshp-notice " + (notice.kind === "error" ? "is-bad" : "is-ok") }, notice.text);
+			if (!notice || notice.kind === "idle") return null;
+			const text = safeText(notice.text, "");
+			if (!text) return null;
+			return h("span", { className: "dshp-notice " + (notice.kind === "error" ? "is-bad" : "is-ok") }, text);
 		}
 
 		function Btn(props) {
@@ -1787,7 +1808,7 @@ body[data-ds-dark-theme] .dshp-rewind-item span{color:var(--dsw-alias-label-tert
 			try {
 				if (typeof t === "function") {
 					const value = t(key);
-					if (value && value !== key) return value;
+					if (value !== undefined && value !== null && value !== key) return safeText(value, fallback);
 				}
 			} catch { /* ignore */ }
 			return fallback;
@@ -2038,6 +2059,26 @@ body[data-ds-dark-theme] .dshp-rewind-item span{color:var(--dsw-alias-label-tert
 				await waitMs(120);
 			}
 			throw new Error((lastError && lastError.message) || "回退后的会话没有打开");
+		}
+
+		/**
+		 * 每个 overlay 组件各包一层错误边界：任一组件的渲染异常只降级它自己，
+		 * 不再把整个 shell.overlay entry 带崩（宿主一旦判 entry crashed 会直接 fatal 退出）。
+		 * 上一次 EnvAdaptSendGate 抛 ReferenceError 拖垮整组，就是缺这层隔离。
+		 */
+		class SlotSafe extends Component {
+			constructor(p) { super(p); this.state = { failed: false }; }
+			static getDerivedStateFromError() { return { failed: true }; }
+			componentDidCatch(error) {
+				try {
+					console.error("[dsh-breach] overlay slot '" + String((this.props && this.props.label) || "?") + "' crashed:", error);
+				} catch { /* ignore */ }
+			}
+			render() {
+				if (this.state.failed) return null;
+				const children = this.props && this.props.children;
+				return children === undefined ? null : children;
+			}
 		}
 
 		class RewindSafe extends Component {
@@ -2355,7 +2396,7 @@ body[data-ds-dark-theme] .dshp-rewind-item span{color:var(--dsw-alias-label-tert
 			const [open, setOpen] = useState(() => !readWelcomeAck());
 			const [checked, setChecked] = useState(false);
 			if (!open) return null;
-			const repo = t("welcome.repo");
+			const repo = safeText(t("welcome.repo"), "");
 			const node = h("div", { className: "dshp-auth-mask", role: "dialog", "aria-modal": "true" },
 				h("div", { className: "dshp-auth-modal", style: { width: "min(560px,100%)" } },
 					h("h2", null, t("welcome.title")),
@@ -2848,7 +2889,7 @@ body[data-ds-dark-theme] .dshp-rewind-item span{color:var(--dsw-alias-label-tert
 				order: 20,
 				inject: (sessionId) => ({
 					sessionId,
-					t: ctx.locale.bind(NS),
+					t: translate,
 				}),
 			}, RewindSafe));
 			ctx.effect(() => installRewindWatch(ctx), "dsh-breach: rewind watch");
@@ -2856,7 +2897,10 @@ body[data-ds-dark-theme] .dshp-rewind-item span{color:var(--dsw-alias-label-tert
 
 		function apply(ctx) {
 			ctx.effect(() => ctx.locale.register(NS, { zh, en }), "dsh-breach: dictionaries");
-			const t = ctx.locale.bind(NS);
+			const bound = ctx.locale.bind(NS);
+			// 统一收敛：DSH 0.2.2 起 locale 返回值可能是 {kind, text} 之类的对象，
+			// 直接进 React children 会抛 error #31 并拖垮整个 overlay entry。
+			const t = (key, params) => safeText(bound(key, params), key);
 			translate = t;
 			// 红队门禁的依赖已随演练台删除，不能再挂到共享 overlay，
 			// 否则其 effect 抛错会让宿主卸载同组的入口和设置面板。
@@ -2864,7 +2908,12 @@ body[data-ds-dark-theme] .dshp-rewind-item span{color:var(--dsw-alias-label-tert
 				name: "shell.overlay",
 				id: "dsh-breach-dock",
 				order: 50,
-			}, () => h(react.Fragment, null, h(WelcomeNotice), h(HappyLauncher), h(HappyDock), h(HeroNewSessionMount), h(TabRowHappyMount))));
+			}, () => h(react.Fragment, null,
+				h(SlotSafe, { label: "welcome" }, h(WelcomeNotice)),
+				h(SlotSafe, { label: "launcher" }, h(HappyLauncher)),
+				h(SlotSafe, { label: "dock" }, h(HappyDock)),
+				h(SlotSafe, { label: "hero" }, h(HeroNewSessionMount)),
+				h(SlotSafe, { label: "tabrow" }, h(TabRowHappyMount)))));
 			try {
 				if (typeof ctx.inject === "function") {
 					ctx.inject(["sessions", "uiWorkspace", "workspaces", "conversation"], (host) => installRewindUi(host));
